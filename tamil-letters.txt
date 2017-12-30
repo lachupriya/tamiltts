@@ -29,9 +29,9 @@
 ழ்  zh
 ற்  tr
 ன்  nn
-அம்மா amma
+அம்மா  amma
 இங்கே  inge
-வா vaa
+வா  vaa
 ஆசை  aasai
 முத்தம்  mutham
 தா  thaa
@@ -39,6 +39,6 @@
 சோறு  soru
 போட்டு  pottu
 ஈயைத்  eeyai
-ஈயை eeyai
+ஈயை  eeyai
 தூர  thoora
 ஓட்டு  ottu

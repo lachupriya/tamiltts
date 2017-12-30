@@ -27,37 +27,14 @@ class TextToSpeech:
                    'ௌ': 'ஔ'}
         delay = 0.1
         for word in str_input.split():
-            list_pron = []
-            l = len(word)
-            i = 0
-            while i < l:
-                letter = word[i]
-                letter2 = ''
-                if ((i+1) < l and word[i+1] == '்'):
-                    letter = letter + word[i+1]
-                    i += 1
-                elif ((i+1) < l and word[i + 1] in ['ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ', 'ே', 'ை', 'ொ', 'ோ', 'ௌ']):
-                    letter = letter + '்'
-                    letter2 = uyirmei[word[i+1]]
-                    i += 1
-                elif (word[i] in ['க', 'ங', 'ச', 'ஞ', 'ட', 'ண', 'த', 'ந', 'ப', 'ம', 'ய', 'ர', 'ல', 'வ', 'ள', 'ழ', 'ற', 'ன']):
-                    letter = letter + '்'
-                    letter2 = 'அ'
-                if letter in self._l:
-                    list_pron.append(self._l[letter])
-                if letter2 in self._l:
-                    list_pron.append(self._l[letter2])
-                i = i + 1
-            print(list_pron)
-            for pron in list_pron:
-                _thread.start_new_thread(TextToSpeech._play_audio, (pron, delay,))
-                delay += 0.2
-            delay += 0.5
+            print(self._l[word])
+            _thread.start_new_thread(TextToSpeech._play_audio, (self._l[word], delay,))
+            delay += 0.75
 
     def _play_audio(sound, delay):
         try:
             time.sleep(delay)
-            wf = wave.open("sounds/female/" + sound + ".wav", 'rb')
+            wf = wave.open("sounds/male/" + sound + ".wav", 'rb')
             p = pyaudio.PyAudio()
             stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                             channels=wf.getnchannels(),
