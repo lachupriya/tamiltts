@@ -1,6 +1,4 @@
-# Written by Alex I. Ramirez @alexram1313
-# arcompware.com
-import re
+﻿import re
 import wave
 import pyaudio
 import _thread
@@ -19,8 +17,9 @@ class TextToSpeech:
         # with open(words_pron_dict, 'r') as file:
         for line in file:
             if not line.startswith(';;;'):
-                key, val = line.split('  ', 2)
-                self._l[key] = val.rstrip()
+                keyval = line.split()
+                if (len(keyval) == 2):
+                    self._l[keyval[0]] = keyval[1].rstrip()
 
     def get_pronunciation(self, str_input):
         uyirmei = {'ா': 'ஆ', 'ி': 'இ', 'ீ': 'ஈ', 'ு': 'உ', 'ூ': 'ஊ', 'ெ': 'எ', 'ே': 'ஏ', 'ை': 'ஐ', 'ொ': 'ஒ', 'ோ': 'ஓ',
@@ -34,7 +33,7 @@ class TextToSpeech:
     def _play_audio(sound, delay):
         try:
             time.sleep(delay)
-            wf = wave.open("sounds/male/" + sound + ".wav", 'rb')
+            wf = wave.open("sounds/female/" + sound + ".wav", 'rb')
             p = pyaudio.PyAudio()
             stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                             channels=wf.getnchannels(),
