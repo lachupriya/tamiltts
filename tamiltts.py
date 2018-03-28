@@ -25,9 +25,9 @@ class TextToSpeech:
         uyirmei = {'ா': 'ஆ', 'ி': 'இ', 'ீ': 'ஈ', 'ு': 'உ', 'ூ': 'ஊ', 'ெ': 'எ', 'ே': 'ஏ', 'ை': 'ஐ', 'ொ': 'ஒ', 'ோ': 'ஓ',
                    'ௌ': 'ஔ'}
         delay = 0.1
-        for word in str_input.split():
-            print(self._l[word])
-            _thread.start_new_thread(TextToSpeech._play_audio, (self._l[word], delay,))
+        for letter in str_input.split():
+            print(self._l[letter])
+            _thread.start_new_thread(TextToSpeech._play_audio, (self._l[letter], delay,))
             delay += 0.75
 
     def _play_audio(sound, delay):
