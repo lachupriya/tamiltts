@@ -26,8 +26,23 @@ class TextToSpeech:
                    'ௌ': 'ஔ'}
         delay = 0.1
         for word in str_input.split():
+<<<<<<< HEAD
             print(self._l[word])
             _thread.start_new_thread(TextToSpeech._play_audio, (self._l[word], delay,))
+=======
+            l = len(word)
+            i = 0
+            while i < l:
+                letter = word[i]
+                if ((i + 1) < l and word[i + 1] in ['்', 'ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ', 'ே', 'ை', 'ொ', 'ோ', 'ௌ']):
+                    letter = letter + word[i + 1]
+                    i += 1
+                if letter in self._l:
+                    print(letter)
+                    _thread.start_new_thread(TextToSpeech._play_audio, (self._l[letter], delay,))
+                i = i + 1
+                delay += 0.15
+>>>>>>> a295143194ac62e941e62b59db058c74a3faf3e3
             delay += 0.75
 
     def _play_audio(sound, delay):
