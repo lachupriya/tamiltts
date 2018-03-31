@@ -1,7 +1,7 @@
 #import re
 import wave
 import pyaudio
-#import _thread
+import _thread
 import time
 #from pydub import AudioSegment
 import io
@@ -25,7 +25,7 @@ class TextToSpeech:
 
     def get_pronunciation(self, str_input):
         #uyirmei = {'ா': 'ஆ', 'ி': 'இ', 'ீ': 'ஈ', 'ு': 'உ', 'ூ': 'ஊ', 'ெ': 'எ', 'ே': 'ஏ', 'ை': 'ஐ', 'ொ': 'ஒ', 'ோ': 'ஓ', 'ௌ': 'ஔ'}
-        #delay = 0.0
+        delay = 0.0
         for word in str_input.split():
             l = len(word)
             i = 0
@@ -38,50 +38,51 @@ class TextToSpeech:
                     i += 1
                 if letter in self._l:
                     print(letter)
-                    #_thread.start_new_thread(TextToSpeech._play_audio, (self._l[letter], delay,))
                     #self._play_audio(self._l[letter], delay,)
-                    wf = wave.open("sounds/female/" + self._l[letter] + ".wav", 'rb')
+                    wf = wave.open("Audio/" + self._l[letter] + ".wav", 'rb')
                     data.append(wf.getparams)
                     nchannels, sampwidth, framerate, nframes, comptype, compname = wf.getparams()
-                    print (nchannels, sampwidth, framerate, nframes, comptype, compname)
-                    if (len(data) == 1):
+                    #print (nchannels, sampwidth, framerate, nframes, comptype, compname)
+                    #print(len(data))
+                    if (len(data) <= 1):
                         word_audio.setparams(wf.getparams())
                     word_audio.writeframes(wf.readframes(wf.getnframes()))
                     wf.close()
-                    #self._play_audio(self._l[letter])
+                    #_thread.start_new_thread(_play_audio, (self._l[letter], delay,))
+                    #_play_audio(self._l[letter])
                 i = i + 1
-                #delay += 0.15
+                delay += 0.2
             word_audio.close()
-            self._play_audio()
-            #delay += 0.1
-            time.sleep(0.1)
+            _play_audio()
+            delay += 0.4
+            time.sleep(0.5)
 
-    #def _play_audio(self, sound):
-    def _play_audio(self):
-        try:
-            #time.sleep(delay)
-            #wf = wave.open("sounds/female/" + sound + ".wav", 'rb')
-            wf = wave.open("temp.wav", 'rb')
-            p = pyaudio.PyAudio()
-            stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                            channels=wf.getnchannels(),
-                            rate=wf.getframerate(),
-                            output=True)
- 
+#def _play_audio(sound):
+#def _play_audio(sound, delay):
+def _play_audio():
+    try:
+        #time.sleep(delay)
+        #wf = wave.open("Audio/" + sound + ".wav", 'rb')
+        wf = wave.open("temp.wav", 'rb')
+        p = pyaudio.PyAudio()
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True)
+
+        data = wf.readframes(TextToSpeech.CHUNK)
+
+        while data:
+            stream.write(data)
             data = wf.readframes(TextToSpeech.CHUNK)
 
-            while data:
-                stream.write(data)
-                data = wf.readframes(TextToSpeech.CHUNK)
+        stream.stop_stream()
+        stream.close()
 
-            stream.stop_stream()
-            stream.close()
-
-            p.terminate()
-            return
-        except:
-            pass
-
+        p.terminate()
+        return
+    except:
+        pass
 
 if __name__ == '__main__':
     tts = TextToSpeech()
