@@ -41,6 +41,8 @@ class TextToSpeech:
                     if (soundfile[0] == 't' and soundfile[1] != 'r' and soundfile[1] != 't' and prevLetter != 'ட்'): 
                         if (soundfile[1] != 'h' or (soundfile[1] == 'h' and len(soundfile) > 2 and prevLetter != 'த்')):
                             soundfile = soundfile.replace('t', 'd')
+                    if (soundfile[0] == 'p' and soundfile[1] != 'p' and prevLetter != 'ப்'): 
+                        soundfile = soundfile.replace('p', 'b')
                     elif (soundfile == 'mm' and i+1 < l):
                         soundfile = 'mm_long'
                     elif (soundfile == 'maa' and i+1 == l):
