@@ -1,11 +1,9 @@
 #import re
 import wave
 import pyaudio
-import _thread
 import time
-#from pydub import AudioSegment
+from pydub import AudioSegment
 import io
-#import glob
 
 class TextToSpeech:
     CHUNK = 1024
@@ -16,7 +14,6 @@ class TextToSpeech:
 
     def _load_words(self, words_pron_dict: str):
         file = io.open(words_pron_dict, mode="r", encoding="utf-8")
-        # with open(words_pron_dict, 'r') as file:
         for line in file:
             if not line.startswith(';;;'):
                 keyval = line.split()
@@ -24,45 +21,50 @@ class TextToSpeech:
                     self._l[keyval[0]] = keyval[1].rstrip()
 
     def get_pronunciation(self, str_input):
-        #uyirmei = {'ா': 'ஆ', 'ி': 'இ', 'ீ': 'ஈ', 'ு': 'உ', 'ூ': 'ஊ', 'ெ': 'எ', 'ே': 'ஏ', 'ை': 'ஐ', 'ொ': 'ஒ', 'ோ': 'ஓ', 'ௌ': 'ஔ'}
-        delay = 0.0
         for word in str_input.split():
             l = len(word)
             i = 0
-            word_audio = wave.open("temp.wav", "wb")
-            data = []
+            word_audio = None
+            first_letter = 1
             while i < l:
                 letter = word[i]
+                prevLetter = ''
                 if ((i + 1) < l and word[i + 1] in ['்', 'ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ', 'ே', 'ை', 'ொ', 'ோ', 'ௌ']):
                     letter = letter + word[i + 1]
                     i += 1
+                    prevLetter = word[i-3]+word[i-2]
+                elif (i-2 > 0):
+                    prevLetter = word[i-2]+word[i-1]
+                #print (letter)
                 if letter in self._l:
-                    print(letter)
-                    #self._play_audio(self._l[letter], delay,)
-                    wf = wave.open("Audio/" + self._l[letter] + ".wav", 'rb')
-                    data.append(wf.getparams)
-                    nchannels, sampwidth, framerate, nframes, comptype, compname = wf.getparams()
-                    #print (nchannels, sampwidth, framerate, nframes, comptype, compname)
-                    #print(len(data))
-                    if (len(data) <= 1):
-                        word_audio.setparams(wf.getparams())
-                    word_audio.writeframes(wf.readframes(wf.getnframes()))
-                    wf.close()
-                    #_thread.start_new_thread(_play_audio, (self._l[letter], delay,))
-                    #_play_audio(self._l[letter])
+                    soundfile = self._l[letter]
+                    if (soundfile[0] == 't' and soundfile[1] != 'r' and soundfile[1] != 't' and prevLetter != 'ட்'): 
+                        if (soundfile[1] != 'h' or (soundfile[1] == 'h' and len(soundfile) > 2 and prevLetter != 'த்')):
+                            soundfile = soundfile.replace('t', 'd')
+                    elif (soundfile == 'mm' and i+1 < l):
+                        soundfile = 'mm_long'
+                    elif (soundfile == 'maa' and i+1 == l):
+                        soundfile = 'maa_long'
+                    elif (soundfile == 'kai' and prevLetter != 'ங்'):
+                        soundfile = 'hai'
+                    elif (soundfile == 'chaa' and prevLetter == 'ஞ்'):
+                        soundfile = 'jaa'
+                    elif (soundfile == 'ndh' and word[i+1] == 'ந'):
+                        soundfile = 'nn'
+                    print(letter, self._l[letter], prevLetter, soundfile, i, l)
+                    sound = AudioSegment.from_wav("sounds3/" + soundfile + ".wav")
+                    if (first_letter == 1):
+                        word_audio = sound
+                        first_letter = 0
+                    else:
+                        word_audio += sound
                 i = i + 1
-                delay += 0.2
-            word_audio.close()
+            word_audio.export("temp.wav", format="wav")
             _play_audio()
-            delay += 0.4
-            time.sleep(0.5)
+            time.sleep(0.25)
 
-#def _play_audio(sound):
-#def _play_audio(sound, delay):
 def _play_audio():
     try:
-        #time.sleep(delay)
-        #wf = wave.open("Audio/" + sound + ".wav", 'rb')
         wf = wave.open("temp.wav", 'rb')
         p = pyaudio.PyAudio()
         stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
@@ -86,12 +88,5 @@ def _play_audio():
 
 if __name__ == '__main__':
     tts = TextToSpeech()
-    #files = glob.glob("tamilsound/*.mp3")
-    #for fle in files:
-    #    #print (fle)
-    #    sound = AudioSegment.from_mp3(fle)
-    #    filename = fle.split('.')
-    #    #print (filename[0])
-    #    sound.export(filename[0] + ".wav", format="wav")
     while True:
         tts.get_pronunciation(input('Enter a word or phrase: '))
